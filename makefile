@@ -24,13 +24,13 @@ all:mkimg
 
 include $(FX3FWROOT)/firmware/common/fx3_build_config.mak
 
-MODULE = bishop-test-1
-
+MODULE = usb-storage-bridge
 
 #SOURCE += $(MODULE).c
-SOURCE += Application.c
+SOURCE += cyfxmscdemo.c
+SOURCE += cyfxmscdscr.c
 SOURCE += cyfxtx.c
-SOURCE += DebugConsole.c
+#SOURCE += DebugConsole.c
 SOURCE_ASM += cyfx_gcc_startup.S
 
 C_OBJECT=$(SOURCE:%.c=./%.o)
