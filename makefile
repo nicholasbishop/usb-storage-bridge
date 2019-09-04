@@ -51,6 +51,7 @@ clean:
 	rm -f ./$(MODULE).$(EXEEXT)
 	rm -f ./$(MODULE).map
 	rm -f ./*.o
+	rm -f ./*.img
 
 compile: $(C_OBJECT) $(A_OBJECT) $(EXES)
 
