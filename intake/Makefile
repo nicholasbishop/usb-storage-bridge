@@ -23,6 +23,8 @@ all:mkimg
 
 include $(FX3_TOOLCHAIN)/common/fx3_build_config.mak
 
+#CCFLAGS+=-Wextra -Wno-unused-parameter
+
 MODULE = usb-storage-bridge-intake
 
 SOURCE += cyfxtx.c

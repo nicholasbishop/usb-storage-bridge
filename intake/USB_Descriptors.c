@@ -26,10 +26,10 @@ const uint8_t CyFxUSB30DeviceDscr[] __attribute__((aligned(32))) = {
     0x00, /* Device sub-class */
     0x00, /* Device protocol */
     0x09, /* Maxpacket size for EP0 : 2^9 */
-    0x42,
-    0x42, /* Vendor ID */
-    0x02,
-    0xEC, /* Product ID */
+    0x09,
+    0x12, /* Vendor ID */
+    0x55, /* TODO(nicholasbishop): need to register a pid here */
+    0x55, /* Product ID */
     0x00,
     0x00, /* Device release number */
     0x01, /* Manufacturer string index */
@@ -237,7 +237,42 @@ const uint8_t CyFxUSBStringLangIDDscr[] __attribute__((aligned(32))) = {
 
 /* Standard manufacturer string descriptor */
 const uint8_t CyFxUSBManufactureDscr[] __attribute__((aligned(32))) = {
-    44,                      /* Descriptor size */
+    32,                      /* Descriptor size */
+    CY_U3P_USB_STRING_DESCR, /* Device descriptor type */
+    'N',
+    0,
+    'i',
+    0,
+    'c',
+    0,
+    'h',
+    0,
+    'o',
+    0,
+    'l',
+    0,
+    'a',
+    0,
+    's',
+    0,
+    ' ',
+    0,
+    'B',
+    0,
+    'i',
+    0,
+    's',
+    0,
+    'h',
+    0,
+    'o',
+    0,
+    'p',
+    0};
+
+/* Standard product string descriptor */
+const uint8_t CyFxUSBProductDscr[] __attribute__((aligned(32))) = {
+    38,                      /* Descriptor size */
     CY_U3P_USB_STRING_DESCR, /* Device descriptor type */
     'U',
     0,
@@ -247,60 +282,33 @@ const uint8_t CyFxUSBManufactureDscr[] __attribute__((aligned(32))) = {
     0,
     ' ',
     0,
-    'D',
+    'S',
     0,
-    'e',
+    't',
     0,
-    's',
+    'o',
     0,
-    'i',
+    'r',
+    0,
+    'a',
     0,
     'g',
     0,
-    'n',
+    'e',
     0,
     ' ',
     0,
     'B',
     0,
-    'y',
-    0,
-    ' ',
-    0,
-    'E',
-    0,
-    'x',
-    0,
-    'a',
-    0,
-    'm',
-    0,
-    'p',
-    0,
-    'l',
-    0,
-    'e',
-    0};
-
-/* Standard product string descriptor */
-const uint8_t CyFxUSBProductDscr[] __attribute__((aligned(32))) = {
-    18,                      /* Descriptor size */
-    CY_U3P_USB_STRING_DESCR, /* Device descriptor type */
-    'K',
-    0,
-    'e',
-    0,
-    'y',
-    0,
-    'b',
-    0,
-    'o',
-    0,
-    'a',
-    0,
     'r',
     0,
+    'i',
+    0,
     'd',
+    0,
+    'g',
+    0,
+    'e',
     0};
 
 CyU3PReturnStatus_t SetUSBdescriptors(void) {

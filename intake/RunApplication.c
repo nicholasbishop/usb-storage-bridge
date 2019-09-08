@@ -93,24 +93,24 @@ void SendKeystroke(char InputChar)
   }
 }
 
-CyU3PQueue KeyEventQueue;
-uint32_t KeyEventQueueStorage[32];
+typedef struct {
+  uint64_t offset;
+  uint64_t length;
+} PullEvent;
+
+CyU3PQueue PullEventQueue;
+PullEvent PullEventQueueStorage[4];
 
 void GPIO_InterruptCallback(uint8_t gpioId) {
-  static char key = 'a';
+  static PullEvent event = { 0, 64 };
 
   if (gpioId != Button) {
      return;
   }
 
-  uint32_t msg = key;
-  CyU3PQueueSend(&KeyEventQueue, &msg, CYU3P_NO_WAIT);
+  CyU3PQueueSend(&PullEventQueue, &event, CYU3P_NO_WAIT);
 
-  if (key == 'z') {
-    key = 'a';
-  } else {
-    key++;
-  }
+  event.offset += event.length;
 }
 
 void InitGpio() {
@@ -133,7 +133,6 @@ void InitGpio() {
 }
 
 void ApplicationThread_Entry(uint32_t Value) {
-  int32_t Seconds = 0;
   CyU3PReturnStatus_t Status = CY_U3P_SUCCESS;
 
   Status = InitializeDebugConsole();
@@ -143,8 +142,9 @@ void ApplicationThread_Entry(uint32_t Value) {
 
   DebugPrint(4, "After InitGpio\n");
 
-  Status = CyU3PQueueCreate(&KeyEventQueue, 1, &KeyEventQueueStorage,
-                            sizeof(KeyEventQueueStorage));
+  Status = CyU3PQueueCreate(&PullEventQueue, 4, &PullEventQueueStorage,
+                            sizeof(PullEventQueueStorage));
+  DebugPrint(4, "Math: %d\n", sizeof(PullEvent));
   DebugPrint(4, "CyU3PQueueCreate -> %d\n", Status);
   CheckStatus("Create Queue", Status);
 
@@ -167,12 +167,15 @@ void ApplicationThread_Entry(uint32_t Value) {
     DebugPrint(4, "\r\nApplication started with %d\r\n", Value);
     // Now run forever
     while (1) {
-      uint32_t msg;
+      PullEvent event;
       DebugPrint(4, "waiting for button press...\n");
-      CyU3PQueueReceive(&KeyEventQueue, &msg, CYU3P_WAIT_FOREVER);
-      DebugPrint(4, "key pressed: %c\n", msg);
+      CyU3PQueueReceive(&PullEventQueue, &event, CYU3P_WAIT_FOREVER);
+
+      DebugPrint(4, "button pressed:\n");
+      DebugPrint(4, "  offset=%d\n", event.offset);
+      DebugPrint(4, "  length=%d\n", event.length);
       BackgroundPrint(1);
-      SendKeystroke(msg);
+      //SendKeystroke(msg);
     }
   }
   DebugPrint(4, "\r\nApplication failed to initialize. Error code: %d.\r\n",
