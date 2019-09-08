@@ -59,6 +59,7 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
 #endif
   // USB Driver will send me Class and Vendor requests to handle
   // I only have to handle three class requests for a Keyboard
+#if 0
   if (Setup.Target == CLASS_REQUEST) {
     if (Setup.Direction == 0) // Host-to-Device
     {
@@ -91,6 +92,7 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
       }
     }
   }
+#endif
   return isHandled;
 }
 

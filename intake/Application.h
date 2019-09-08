@@ -15,6 +15,11 @@
 #include "cyu3usb.h"
 #include "cyu3usbconst.h"
 
+typedef struct {
+  uint64_t offset;
+  uint64_t length;
+} PullEvent;
+
 #define DebugPrint CyU3PDebugPrint
 #define APPLICATION_THREAD_STACK (0x1000)
 #define APPLICATION_THREAD_PRIORITY (8)
@@ -30,7 +35,7 @@
 #define HID_SET_IDLE (10)
 #define HID_SET_REPORT (9)
 #define HID_GET_REPORT (1)
-#define REPORT_SIZE (8)
+#define REPORT_SIZE (sizeof(PullEvent))
 
 #define Button (45)
 

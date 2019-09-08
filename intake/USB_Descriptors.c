@@ -22,7 +22,7 @@ const uint8_t CyFxUSB30DeviceDscr[] __attribute__((aligned(32))) = {
     CY_U3P_USB_DEVICE_DESCR, /* Device descriptor type */
     0x00,
     0x03, /* USB 3.0 */
-    0x00, /* Device class */
+    0xff, /* Device class */
     0x00, /* Device sub-class */
     0x00, /* Device protocol */
     0x09, /* Maxpacket size for EP0 : 2^9 */
@@ -44,7 +44,7 @@ const uint8_t CyFxUSB20DeviceDscr[] __attribute__((aligned(32))) = {
     CY_U3P_USB_DEVICE_DESCR, /* Device descriptor type */
     0x10,
     0x02, /* USB 2.10 */
-    0x00, /* Device class */
+    0xff, /* Device class */
     0x00, /* Device sub-class */
     0x00, /* Device protocol */
     0x40, /* Maxpacket size for EP0 : 64 bytes */

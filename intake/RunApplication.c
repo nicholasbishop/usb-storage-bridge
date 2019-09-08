@@ -51,52 +51,28 @@ const uint8_t Ascii2Usage[] = {
     2, 0x31, 2, 0x30, 2, 0x35, 0, 0x28 // 18..1F ^ xyz{|}~
 };
 
-void SendKeystroke(char InputChar)
-// In this example characters typed on the debug console are sent as key strokes
-// The format of a keystroke is defined in the report descriptor; it is 8 bytes
-// long = Modifier, Reserved, UsageCode[6] A keyboard will send two reports, one
-// for key press and one for key release A 'standard' keyboard can encode up to
-// 6 key usages in one report, this example only does 1 CheckStatus calls
-// commented out following debug, reinsert them if needed
+void SendPullEvent(PullEvent* event)
+    // In this example characters typed on the debug console are sent as key strokes
+    // The format of a keystroke is defined in the report descriptor; it is 8 bytes
+    // long = Modifier, Reserved, UsageCode[6] A keyboard will send two reports, one
+    // for key press and one for key release A 'standard' keyboard can encode up to
+    // 6 key usages in one report, this example only does 1 CheckStatus calls
+    // commented out following debug, reinsert them if needed
 {
-  uint16_t Index;
   CyU3PReturnStatus_t Status = CY_U3P_SUCCESS;
   CyU3PDmaBuffer_t ReportBuffer;
-  // The only Control character I handle is CR
-  if (InputChar == 0x0D)
-    InputChar = 0x7F;
-  if (InputChar > 0x1F) {
-    Index = (((uint8_t)InputChar & 0x7F) - 0x20)
-            << 1; // Each entry is two uint8_t
-    // First need a buffer to build the report
-    Status = CyU3PDmaChannelGetBuffer(&glCPUtoUSB_Handle, &ReportBuffer,
-                                      CYU3P_WAIT_FOREVER);
-    //		CheckStatus("GetReportBuffer4KeyPress", Status);
-    // Most of this report will be 0's
-    ReportBuffer.count = REPORT_SIZE;
-    CyU3PMemSet(ReportBuffer.buffer, 0, REPORT_SIZE);
-    // Convert InputChar to a Modifier and a Usage
-    ReportBuffer.buffer[0] = Ascii2Usage[Index++];
-    ReportBuffer.buffer[2] = Ascii2Usage[Index];
-    // Send the Key Press to the host
-    Status = CyU3PDmaChannelCommitBuffer(&glCPUtoUSB_Handle, REPORT_SIZE, 0);
-    CheckStatus("Send KeyPress ", Status);
-    // Wait 50msec then send a Key Release
-    CyU3PThreadSleep(50);
-    Status = CyU3PDmaChannelGetBuffer(&glCPUtoUSB_Handle, &ReportBuffer,
-                                      CYU3P_WAIT_FOREVER);
-    CheckStatus("GetReportBuffer4KeyRelease", Status);
-    CyU3PMemSet(ReportBuffer.buffer, 0, REPORT_SIZE);
-    ReportBuffer.count = REPORT_SIZE;
-    Status = CyU3PDmaChannelCommitBuffer(&glCPUtoUSB_Handle, REPORT_SIZE, 0);
-    //		CheckStatus("Send KeyRelease", Status);
-  }
+  // First need a buffer to build the report
+  Status = CyU3PDmaChannelGetBuffer(&glCPUtoUSB_Handle, &ReportBuffer,
+                                    CYU3P_WAIT_FOREVER);
+  //		CheckStatus("GetReportBuffer4KeyPress", Status);
+  // Most of this report will be 0's
+  ReportBuffer.count = REPORT_SIZE;
+  CyU3PMemSet(ReportBuffer.buffer, 0, REPORT_SIZE);
+  memcpy(ReportBuffer.buffer, event, REPORT_SIZE);
+  // Send the pull event to the host
+  Status = CyU3PDmaChannelCommitBuffer(&glCPUtoUSB_Handle, REPORT_SIZE, 0);
+  CheckStatus("Send pull event", Status);
 }
-
-typedef struct {
-  uint64_t offset;
-  uint64_t length;
-} PullEvent;
 
 CyU3PQueue PullEventQueue;
 PullEvent PullEventQueueStorage[4];
