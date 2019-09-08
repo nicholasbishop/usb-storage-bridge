@@ -31,7 +31,7 @@ void UartCallback(CyU3PUartEvt_t Event, CyU3PUartError_t Error)
     DebugPrint(4, "%c", InputChar); // Echo the character
     // In this example the characters typed on the debug console are sent as
     // keystrokes on the keyboard
-    SendKeystroke(InputChar);
+    // SendKeystroke(InputChar);
 #if (0)
     if (InputChar == 0x0d) {
       CyU3PDebugPrint(4, "\r\nInput: '%s'", &glConsoleInBuffer[0]);

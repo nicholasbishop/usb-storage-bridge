@@ -97,12 +97,20 @@ CyU3PQueue KeyEventQueue;
 uint32_t KeyEventQueueStorage[32];
 
 void GPIO_InterruptCallback(uint8_t gpioId) {
+  static char key = 'a';
+
   if (gpioId != Button) {
-    return;
+     return;
   }
 
-  uint32_t msg = 'a';
+  uint32_t msg = key;
   CyU3PQueueSend(&KeyEventQueue, &msg, CYU3P_NO_WAIT);
+
+  if (key == 'z') {
+    key = 'a';
+  } else {
+    key++;
+  }
 }
 
 void InitGpio() {
@@ -133,31 +141,38 @@ void ApplicationThread_Entry(uint32_t Value) {
 
   InitGpio();
 
+  DebugPrint(4, "After InitGpio\n");
+
   Status = CyU3PQueueCreate(&KeyEventQueue, 1, &KeyEventQueueStorage,
                             sizeof(KeyEventQueueStorage));
+  DebugPrint(4, "CyU3PQueueCreate -> %d\n", Status);
+  CheckStatus("Create Queue", Status);
 
   // Create an Event Group that Callbacks can use to signal events to a
   // Background DebugPrint
   Status = CyU3PEventCreate(&DisplayEvent);
   CheckStatus("Create Event", Status);
 
-  // Give me time to start up my Ellisys Explorer
-  DebugPrint(4, "\r\n\r\n\r\nStart Ellisys NOW\r\n");
-  CyU3PThreadSleep(10000);
-
   Status = InitializeUSB();
   CheckStatus("USB Initialized", Status);
+  DebugPrint(4, "After InitializeUSB\n");
 
   // Wait for the USB connection to be up
   while (!glIsApplicationActive)
     BackgroundPrint(10);
 
+  DebugPrint(4, "App is up, status=%d\n", Status);
+
   if (Status == CY_U3P_SUCCESS) {
     DebugPrint(4, "\r\nApplication started with %d\r\n", Value);
     // Now run forever
     while (1) {
-      DebugPrint(4, "%d, ", Seconds++);
-      BackgroundPrint(1000);
+      uint32_t msg;
+      DebugPrint(4, "waiting for button press...\n");
+      CyU3PQueueReceive(&KeyEventQueue, &msg, CYU3P_WAIT_FOREVER);
+      DebugPrint(4, "key pressed: %c\n", msg);
+      BackgroundPrint(1);
+      SendKeystroke(msg);
     }
   }
   DebugPrint(4, "\r\nApplication failed to initialize. Error code: %d.\r\n",
