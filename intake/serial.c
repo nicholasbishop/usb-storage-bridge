@@ -17,6 +17,8 @@ CyU3PDmaChannel glUARTtoCPU_Handle;  // Handle needed by Uart Callback routine
 char glConsoleInBuffer[32];          // Buffer for user Console Input
 uint32_t glConsoleInIndex;           // Index into ConsoleIn buffer
 
+CyU3PThread DebugThread;
+
 void UartCallback(CyU3PUartEvt_t Event, CyU3PUartError_t Error)
 // Handle characters typed in by the developer
 // Later we will respond to commands terminated with a <CR>
@@ -102,4 +104,49 @@ CyU3PReturnStatus_t InitializeDebugConsole(void) {
     CheckStatus("ConsoleInEnabled", Status);
   }
   return Status;
+}
+
+#define DEBUG_EVENT_MSG_LEN 64
+
+typedef struct {
+  uint8_t msg[DEBUG_EVENT_MSG_LEN];
+} DebugEvent;
+
+CyU3PQueue DebugEventQueue;
+DebugEvent DebugEventQueueStorage[32];
+
+void debug_print(char* msg) {
+  DebugEvent event;
+  CyU3PDebugStringPrint(event.msg, DEBUG_EVENT_MSG_LEN, msg);
+  CyU3PQueueSend(&DebugEventQueue, &event, CYU3P_NO_WAIT);
+}
+
+void debug_print_d(char* msg, const int d1) {
+  DebugEvent event;
+  CyU3PDebugStringPrint(event.msg, DEBUG_EVENT_MSG_LEN, msg, d1);
+  CyU3PQueueSend(&DebugEventQueue, &event, CYU3P_NO_WAIT);
+}
+
+void debug_print_s(char* msg, const char* s1) {
+  DebugEvent event;
+  CyU3PDebugStringPrint(event.msg, DEBUG_EVENT_MSG_LEN, msg, s1);
+  CyU3PQueueSend(&DebugEventQueue, &event, CYU3P_NO_WAIT);
+}
+
+void DebugThread_Entry(uint32_t Value) {
+  CyU3PDebugPrint(4, "starting debug thread\n");
+
+  CyU3PReturnStatus_t status =
+      CyU3PQueueCreate(&DebugEventQueue, sizeof(DebugEvent) / 4,
+                       &DebugEventQueueStorage, sizeof(DebugEventQueueStorage));
+  if (status) {
+    CyU3PDebugPrint(4, "debug thread: CyU3PQueueCreate failed\n");
+    return;
+  }
+
+  for (;;) {
+    DebugEvent event;
+    CyU3PQueueReceive(&DebugEventQueue, &event, CYU3P_WAIT_FOREVER);
+    CyU3PDebugPrint(4, "%s\n", event.msg);
+  }
 }

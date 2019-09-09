@@ -140,12 +140,13 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__((aligned(32))) = {
     /* Configuration descriptor */
     9,                       /* Descriptor size */
     CY_U3P_USB_CONFIG_DESCR, /* Configuration descriptor type */
-    9 + 9 + 7 + 7 + 6, 0, /* Length of this descriptor and all sub descriptors */
-    1,                /* Number of interfaces */
-    1,                /* Configuration number */
-    0,                /* Configuration string index */
-    0x80,             /* Config characteristics - Bus powered */
-    12,               /* Max power consumption of device (in 8mA unit) : 96mA */
+    9 + 9 + 7 + 7 + 6,
+    0,    /* Length of this descriptor and all sub descriptors */
+    1,    /* Number of interfaces */
+    1,    /* Configuration number */
+    0,    /* Configuration string index */
+    0x80, /* Config characteristics - Bus powered */
+    12,   /* Max power consumption of device (in 8mA unit) : 96mA */
 
     /* HID Interface descriptor */
     9,                       /* Descriptor size */
@@ -179,13 +180,13 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__((aligned(32))) = {
     CY_FX_EP_PRODUCER,       /* Endpoint address and description */
     CY_U3P_USB_EP_BULK,      /* Bulk endpoint type */
     0x00, 0x04,              /* Max packet size = 1024 bytes */
-    0x00,                    /* Servicing interval for data transfers : 0 for Bulk */
+    0x00, /* Servicing interval for data transfers : 0 for Bulk */
 
     /* Super speed endpoint companion descriptor for producer EP */
     6,                        /* Descriptor size */
     CY_U3P_SS_EP_COMPN_DESCR, /* SS endpoint companion descriptor type */
     15, /* Max no. of packets in a burst(0-15) - 0: burst 1 packet at a time */
-    0, /* Max streams for bulk endpoint = 0 (No streams) */
+    0,  /* Max streams for bulk endpoint = 0 (No streams) */
     0, 0, /* Service interval for the endpoint */
 };
 

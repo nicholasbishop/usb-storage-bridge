@@ -38,6 +38,8 @@ void StopApplication(void);
 
 // Declare the callbacks needed to support the USB device driver
 CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
+  debug_print("entering USBSetup_Callback");
+
   CyBool_t isHandled = CyFalse;
   // CyU3PReturnStatus_t Status;
   uint16_t Count;
@@ -54,24 +56,26 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
       uint16_t Length;
     };
   } Setup;
+
   // Copy the incoming Setup Packet into my Setup union which will "unpack" the
   // variables
   Setup.SetupData[0] = setupdat0;
   Setup.SetupData[1] = setupdat1;
-#if (0)
+#if (1)
   // Included for DEBUG to display each sub field in the USB Command if needed
   // Note that we are in a Callback so shouldn't really using DebugPrint
 
   //	DebugPrint(4, "\r\nSetup Input %X,%X", setupdat0, setupdat1);
   //	DebugPrint(4, "\r\nRaw Bytes: ");
-  //	for (i=0; i<8; i++) DebugPrint(4, "%x,", Setup.RawBytes[i]);
-  DebugPrint(4, "\r\nDirection:%d", Setup.Direction);
-  DebugPrint(4, ", Type:%d", Setup.Type);
-  DebugPrint(4, ", Target:%d", Setup.Target);
-  DebugPrint(4, ", Request:%X", Setup.Request);
-  DebugPrint(4, "\r\nValue:%X", Setup.Value);
-  DebugPrint(4, ", Index:%d", Setup.Index);
-  DebugPrint(4, ", Length:%d", Setup.Length);
+  //	for (i=0; i<8; i++) debug_print("%x,", Setup.RawBytes[i]);
+  debug_print("USBSetup_Callback:");
+  debug_print_d("  Direction=%d", Setup.Direction);
+  debug_print_d("  Type=%d", Setup.Type);
+  debug_print_d("  Target=%d", Setup.Target);
+  debug_print_d("  Request=%X", Setup.Request);
+  debug_print_d("  Value=%X", Setup.Value);
+  debug_print_d("  Index=%d", Setup.Index);
+  debug_print_d("  Length=%d", Setup.Length);
 #endif
   // USB Driver will send me Class and Vendor requests to handle
   // I only have to handle three class requests for a Keyboard
@@ -195,12 +199,14 @@ void PacketReceived_Callback(CyU3PDmaChannel* Handle,
 void StartApplication(void)
 // USB has been enumerated, time to start the application running
 {
+  debug_print("==========================");
+
   CyU3PEpConfig_t epConfig;
   CyU3PDmaChannelConfig_t dmaConfig;
   CyU3PReturnStatus_t Status = CY_U3P_SUCCESS;
 
   // Display the enumerated device bus speed
-  DebugPrint(4, "\r\nRunning at %sSpeed", BusSpeed[CyU3PUsbGetSpeed()]);
+  debug_print_s("Running at %sSpeed", BusSpeed[CyU3PUsbGetSpeed()]);
 
   // Configure and enable the Interrupt Endpoint
   CyU3PMemSet((uint8_t*)&epConfig, 0, sizeof(epConfig));
@@ -213,7 +219,7 @@ void StartApplication(void)
   CheckStatus("Setup Interrupt In Endpoint", Status);
 
   // Based on the Bus Speed configure the endpoint packet size
-  CyU3PMemSet((uint8_t *)&epConfig, 0, sizeof(epConfig));
+  CyU3PMemSet((uint8_t*)&epConfig, 0, sizeof(epConfig));
   epConfig.enable = CyTrue;
   epConfig.epType = CY_U3P_USB_EP_BULK;
   epConfig.burstLen = 16;
@@ -357,12 +363,8 @@ void ApplicationThread_Entry(uint32_t Value) {
 
   InitGpio();
 
-  DebugPrint(4, "After InitGpio\n");
-
   Status = CyU3PQueueCreate(&PullEventQueue, 4, &PullEventQueueStorage,
                             sizeof(PullEventQueueStorage));
-  DebugPrint(4, "Math: %d\n", sizeof(PullEvent));
-  DebugPrint(4, "CyU3PQueueCreate -> %d\n", Status);
   CheckStatus("Create Queue", Status);
 
   // Create an Event Group that Callbacks can use to signal events to a
@@ -372,25 +374,24 @@ void ApplicationThread_Entry(uint32_t Value) {
 
   Status = InitializeUSB();
   CheckStatus("USB Initialized", Status);
-  DebugPrint(4, "After InitializeUSB\n");
 
   // Wait for the USB connection to be up
   while (!glIsApplicationActive)
     BackgroundPrint(10);
 
-  DebugPrint(4, "App is up, status=%d\n", Status);
+  debug_print_d("App is up, status=%d", Status);
 
   if (Status == CY_U3P_SUCCESS) {
-    DebugPrint(4, "\r\nApplication started with %d\r\n", Value);
+    debug_print_d("Application started with %d", Value);
     // Now run forever
     while (1) {
       PullEvent event;
-      DebugPrint(4, "waiting for button press...\n");
+      debug_print("waiting for button press...");
       CyU3PQueueReceive(&PullEventQueue, &event, CYU3P_WAIT_FOREVER);
 
-      DebugPrint(4, "button pressed:\n");
-      DebugPrint(4, "  offset=%d\n", event.offset);
-      DebugPrint(4, "  length=%d\n", event.length);
+      debug_print("button pressed:");
+      debug_print_d("  offset=%d", event.offset);
+      debug_print_d("  length=%d", event.length);
       BackgroundPrint(1);
       // SendKeystroke(msg);
 

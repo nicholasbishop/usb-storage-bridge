@@ -39,6 +39,10 @@ typedef struct {
 
 #define Button (45)
 
+void debug_print(char* msg);
+void debug_print_d(char* msg, const int d1);
+void debug_print_s(char* msg, const char* s1);
+
 #include "cyu3externcend.h"
 
 #endif /* _INCLUDED_KEYBOARD_H_ */

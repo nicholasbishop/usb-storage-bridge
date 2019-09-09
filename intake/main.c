@@ -10,6 +10,9 @@
 extern void ApplicationThread_Entry(uint32_t Value);
 extern CyU3PThread ApplicationThread;
 
+extern void DebugThread_Entry(uint32_t Value);
+extern CyU3PThread DebugThread;
+
 // ApplicationDefine function called by RTOS to startup the application threads
 void CyFxApplicationDefine(void) {
   void* StackPtr = NULL;
@@ -38,6 +41,20 @@ void CyFxApplicationDefine(void) {
     while (1)
       ;
   }
+
+  StackPtr = CyU3PMemAlloc(APPLICATION_THREAD_STACK);
+  Status = CyU3PThreadCreate(
+      &DebugThread,                 // Handle to my Application Thread
+      "12:DebugThread",             // Thread ID and name
+      DebugThread_Entry,            // Thread entry function
+      0,                            // Parameter passed to Thread
+      StackPtr,                     // Pointer to the allocated thread stack
+      APPLICATION_THREAD_STACK,     // Allocated thread stack size
+      APPLICATION_THREAD_PRIORITY,  // Thread priority
+      APPLICATION_THREAD_PRIORITY,  // = Thread priority so no preemption
+      CYU3P_NO_TIME_SLICE,          // Time slice no supported
+      CYU3P_AUTO_START              // Start the thread immediately
+  );
 }
 
 // Main sets up the CPU environment the starts the RTOS
