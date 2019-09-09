@@ -32,7 +32,7 @@ SOURCE += serial.c
 SOURCE += app.c
 SOURCE += main.c
 SOURCE += Support.c
-SOURCE += USB_Descriptors.c
+SOURCE += descriptors.c
 SOURCE += USB_Handler.c
 SOURCE_ASM += cyfx_gcc_startup.S
 
