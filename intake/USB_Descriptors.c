@@ -22,7 +22,7 @@ const uint8_t CyFxUSB30DeviceDscr[] __attribute__((aligned(32))) = {
     CY_U3P_USB_DEVICE_DESCR, /* Device descriptor type */
     0x00,
     0x03, /* USB 3.0 */
-    0xff, /* Device class */
+    0x00, /* Device class */
     0x00, /* Device sub-class */
     0x00, /* Device protocol */
     0x09, /* Maxpacket size for EP0 : 2^9 */
@@ -44,7 +44,7 @@ const uint8_t CyFxUSB20DeviceDscr[] __attribute__((aligned(32))) = {
     CY_U3P_USB_DEVICE_DESCR, /* Device descriptor type */
     0x10,
     0x02, /* USB 2.10 */
-    0xff, /* Device class */
+    0x00, /* Device class */
     0x00, /* Device sub-class */
     0x00, /* Device protocol */
     0x40, /* Maxpacket size for EP0 : 64 bytes */
@@ -140,7 +140,7 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__((aligned(32))) = {
     /* Configuration descriptor */
     9,                       /* Descriptor size */
     CY_U3P_USB_CONFIG_DESCR, /* Configuration descriptor type */
-    9 + 9 + 9 + 7 + 6,
+    9 + 9 + 7 + 6,
     0,    /* Length of this descriptor and all sub descriptors */
     1,    /* Number of interfaces */
     1,    /* Configuration number */
@@ -154,26 +154,17 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__((aligned(32))) = {
     0,                       /* Interface number */
     0,                       /* Alternate setting number */
     1,                       /* Number of end points */
-    3,                       /* HID class */
+    0xff,                    /* HID class */
     1,                       /* Boot Interface sub class */
     1,                       /* Keyboard protocol code */
     0,                       /* Interface descriptor string index */
-
-    /* HID descriptor */
-    9,                           /* Descriptor size */
-    CY_U3P_USB_HID_DESCR,        /* HID Class */
-    0x00, 0x01,                  /* HID Specification Level */
-    0,                           /* HID Target Country */
-    1,                           /* Number of HID Class descriptors */
-    CY_U3P_USB_REPORT_DESCR,     /* HID class type */
-    sizeof(ReportDescriptor), 0, /* Total length of Report Descriptor */
 
     /* Endpoint descriptor for consumer EP */
     7,                       /* Descriptor size */
     CY_U3P_USB_ENDPNT_DESCR, /* Endpoint descriptor type */
     CY_FX_EP_CONSUMER,       /* Endpoint address and description */
     CY_U3P_USB_EP_INTR,      /* Interrupt endpoint type */
-    8, 0,                    /* Max packet size = 8 bytes */
+    16, 0,                    /* Max packet size = 16 bytes */
     8,                       /* Servicing interval for data transfers */
 
     /* Super speed endpoint companion descriptor for consumer EP */
@@ -205,7 +196,7 @@ const uint8_t CyFxUSBHSFSConfigDscr[] __attribute__((aligned(32))) = {
     0,                       /* Interface number */
     0,                       /* Alternate setting number */
     1,                       /* Number of end points */
-    3,                       /* HID class */
+    0xff,                    /* HID class */
     1,                       /* Boot Interface sub class */
     1,                       /* Keyboard protocol code */
     0,                       /* Interface descriptor string index */

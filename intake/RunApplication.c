@@ -152,6 +152,8 @@ void ApplicationThread_Entry(uint32_t Value) {
       DebugPrint(4, "  length=%d\n", event.length);
       BackgroundPrint(1);
       //SendKeystroke(msg);
+
+      SendPullEvent(&event);
     }
   }
   DebugPrint(4, "\r\nApplication failed to initialize. Error code: %d.\r\n",

@@ -42,7 +42,7 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
   // variables
   Setup.SetupData[0] = setupdat0;
   Setup.SetupData[1] = setupdat1;
-#if (0)
+#if (1)
   // Included for DEBUG to display each sub field in the USB Command if needed
   // Note that we are in a Callback so shouldn't really using DebugPrint
   uint32_t i;
@@ -59,7 +59,7 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
 #endif
   // USB Driver will send me Class and Vendor requests to handle
   // I only have to handle three class requests for a Keyboard
-#if 0
+#if 1
   if (Setup.Target == CLASS_REQUEST) {
     if (Setup.Direction == 0) // Host-to-Device
     {
