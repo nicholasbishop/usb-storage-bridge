@@ -28,7 +28,7 @@ include $(FX3_TOOLCHAIN)/common/fx3_build_config.mak
 MODULE = usb-storage-bridge-intake
 
 SOURCE += cyfxtx.c
-SOURCE += DebugConsole.c
+SOURCE += serial.c
 SOURCE += RunApplication.c
 SOURCE += StartStopApplication.c
 SOURCE += StartUp.c
