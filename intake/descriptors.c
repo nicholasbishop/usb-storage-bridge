@@ -304,26 +304,26 @@ const uint8_t CyFxUSBProductDscr[] __attribute__((aligned(32))) = {
 
 CyU3PReturnStatus_t SetUSBdescriptors(void) {
   CyU3PReturnStatus_t OverallStatus, Status;
-  OverallStatus = Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_DEVICE_DESCR, NULL,
+  OverallStatus = Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_DEVICE_DESCR, 0,
                                            (uint8_t *)CyFxUSB30DeviceDscr);
   CheckStatus("SET_SS_DEVICE_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(
-      CY_U3P_USB_SET_HS_DEVICE_DESCR, NULL, (uint8_t *)CyFxUSB20DeviceDscr);
+      CY_U3P_USB_SET_HS_DEVICE_DESCR, 0, (uint8_t *)CyFxUSB20DeviceDscr);
   CheckStatus("SET_HS_DEVICE_DESCR", Status);
-  OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_BOS_DESCR, NULL,
+  OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_BOS_DESCR, 0,
                                             (uint8_t *)CyFxUSBBOSDscr);
   CheckStatus("SET_SS_BOS_DESCR", Status);
-  OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_DEVQUAL_DESCR, NULL,
+  OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_DEVQUAL_DESCR, 0,
                                             (uint8_t *)CyFxUSBDeviceQualDscr);
   CheckStatus("SET_DEVQUAL_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(
-      CY_U3P_USB_SET_SS_CONFIG_DESCR, NULL, (uint8_t *)CyFxUSBSSConfigDscr);
+      CY_U3P_USB_SET_SS_CONFIG_DESCR, 0, (uint8_t *)CyFxUSBSSConfigDscr);
   CheckStatus("SET_SS_CONFIG_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(
-      CY_U3P_USB_SET_HS_CONFIG_DESCR, NULL, (uint8_t *)CyFxUSBHSFSConfigDscr);
+      CY_U3P_USB_SET_HS_CONFIG_DESCR, 0, (uint8_t *)CyFxUSBHSFSConfigDscr);
   CheckStatus("SET_HS_CONFIG_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(
-      CY_U3P_USB_SET_FS_CONFIG_DESCR, NULL, (uint8_t *)CyFxUSBHSFSConfigDscr);
+      CY_U3P_USB_SET_FS_CONFIG_DESCR, 0, (uint8_t *)CyFxUSBHSFSConfigDscr);
   CheckStatus("SET_FS_CONFIG_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_STRING_DESCR, 0,
                                             (uint8_t *)CyFxUSBStringLangIDDscr);

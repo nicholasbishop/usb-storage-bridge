@@ -15,9 +15,11 @@ extern CyU3PReturnStatus_t InitializeDebugConsole(void);
 extern CyU3PReturnStatus_t InitializeUSB(void);
 extern void CheckStatus(char *StringPtr, CyU3PReturnStatus_t Status);
 extern void BackgroundPrint(uint32_t TimeToWait);
+extern uint32_t BitPosition(uint32_t Value);
 
 extern CyU3PDmaChannel glCPUtoUSB_Handle;
 extern CyU3PEvent DisplayEvent; // Used to display events
+extern CyU3PReturnStatus_t SetUSBdescriptors(void);
 
 extern const uint8_t ReportDescriptor[];
 
@@ -31,10 +33,13 @@ const char *BusSpeed[] = {"Not Connected", "Full ", "High ", "Super"};
 
 uint8_t glEP0Buffer[32] __attribute__((aligned(32)));
 
+void StartApplication(void);
+void StopApplication(void);
+
 // Declare the callbacks needed to support the USB device driver
 CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
   CyBool_t isHandled = CyFalse;
-  CyU3PReturnStatus_t Status;
+  //CyU3PReturnStatus_t Status;
   uint16_t Count;
   union {
     uint32_t SetupData[2];
@@ -53,10 +58,10 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
   // variables
   Setup.SetupData[0] = setupdat0;
   Setup.SetupData[1] = setupdat1;
-#if (1)
+#if (0)
   // Included for DEBUG to display each sub field in the USB Command if needed
   // Note that we are in a Callback so shouldn't really using DebugPrint
-  uint32_t i;
+
   //	DebugPrint(4, "\r\nSetup Input %X,%X", setupdat0, setupdat1);
   //	DebugPrint(4, "\r\nRaw Bytes: ");
   //	for (i=0; i<8; i++) DebugPrint(4, "%x,", Setup.RawBytes[i]);
@@ -94,7 +99,7 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
     {
       if ((Setup.Request == CY_U3P_USB_SC_GET_DESCRIPTOR) &&
           ((Setup.Value >> 8) == CY_U3P_USB_REPORT_DESCR)) {
-        Status = CyU3PUsbSendEP0Data(59, (uint8_t *)ReportDescriptor);
+        CyU3PUsbSendEP0Data(59, (uint8_t *)ReportDescriptor);
         //				CheckStatus("Send Report Descriptor",
         //Status);
         // 'Send Report Descriptor' moved to char* EventName[28]
