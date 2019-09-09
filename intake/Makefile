@@ -29,8 +29,7 @@ MODULE = usb-storage-bridge-intake
 
 SOURCE += cyfxtx.c
 SOURCE += serial.c
-SOURCE += RunApplication.c
-SOURCE += StartStopApplication.c
+SOURCE += app.c
 SOURCE += StartUp.c
 SOURCE += Support.c
 SOURCE += USB_Descriptors.c
