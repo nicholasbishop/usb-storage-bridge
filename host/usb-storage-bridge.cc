@@ -4,7 +4,7 @@
 #include <libusb-1.0/libusb.h>
 
 class LibUsb {
-public:
+ public:
   LibUsb() {
     int rc = libusb_init(nullptr);
     if (rc) {
@@ -16,7 +16,7 @@ public:
   ~LibUsb() { libusb_exit(nullptr); }
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   if (argc != 2) {
     fprintf(stderr, "usage: usb-storage-bridge <path>\n");
     return 1;
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "libusb_set_option failed: %d\n", rc);
   }
 
-  libusb_device_handle *device =
+  libusb_device_handle* device =
       libusb_open_device_with_vid_pid(nullptr, 0x1209, 0x5555);
   if (!device) {
     fprintf(stderr, "libusb_open_device_with_vid_pid failed\n");
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 
   int transferred = 0;
   rc = libusb_interrupt_transfer(device, /*endpoint=*/0x82,
-                                 reinterpret_cast<unsigned char *>(&event),
+                                 reinterpret_cast<unsigned char*>(&event),
                                  sizeof(event), &transferred, /*timeout=*/0);
   printf("rc=%s, transferred=%d, offset=%ld, length=%ld\n",
          libusb_error_name(rc), transferred, event.offset, event.length);
