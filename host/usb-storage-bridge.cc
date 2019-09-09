@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
   LibUsb lib;
 
   int rc = libusb_set_option(nullptr, LIBUSB_OPTION_LOG_LEVEL,
-                             LIBUSB_LOG_LEVEL_WARNING);
+                             LIBUSB_LOG_LEVEL_DEBUG);
   if (rc) {
     fprintf(stderr, "libusb_set_option failed: %d\n", rc);
   }
@@ -65,9 +65,14 @@ int main(int argc, char** argv) {
 
   struct stat sb;
   fstat(fd, &sb);
+  printf("sb.st_size: %ld\n", sb.st_size);
 
   unsigned char* file_data = reinterpret_cast<unsigned char*>(
-      mmap(nullptr, sb.st_size, PROT_WRITE, MAP_SHARED, fd, /*offset=*/0));
+      mmap(nullptr, sb.st_size, PROT_READ, MAP_SHARED, fd, /*offset=*/0));
+  if (!file_data) {
+    fprintf(stderr, "mmap failed\n");
+    return 1;
+  }
 
   struct PullEvent {
     uint64_t offset;
@@ -86,6 +91,8 @@ int main(int argc, char** argv) {
     if (rc) {
       break;
     }
+
+    printf("data: %.*s\n", (int)event.length, file_data + event.offset);
 
     rc = libusb_bulk_transfer(device, /*endpoint=*/0x02,
                               file_data + event.offset, event.length,
