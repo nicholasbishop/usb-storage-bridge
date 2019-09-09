@@ -62,8 +62,8 @@ int main(void) {
       // r			io_cfg.gpioSimpleEn[1]  = 0;
       // r			io_cfg.gpioComplexEn[0] = 0;
       // r			io_cfg.gpioComplexEn[1] = 0;
-      io_cfg.gpioSimpleEn[0] = 0;						// No GPIOs 0 to 31 are needed
-      io_cfg.gpioSimpleEn[1] = 1<<(Button-32);			// Button is on GPIO_45
+      io_cfg.gpioSimpleEn[0] = 0; // No GPIOs 0 to 31 are needed
+      io_cfg.gpioSimpleEn[1] = 1 << (Button - 32); // Button is on GPIO_45
 
       Status = CyU3PDeviceConfigureIOMatrix(&io_cfg);
       if (Status == CY_U3P_SUCCESS)

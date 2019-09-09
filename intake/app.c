@@ -39,7 +39,7 @@ void StopApplication(void);
 // Declare the callbacks needed to support the USB device driver
 CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
   CyBool_t isHandled = CyFalse;
-  //CyU3PReturnStatus_t Status;
+  // CyU3PReturnStatus_t Status;
   uint16_t Count;
   union {
     uint32_t SetupData[2];
@@ -83,7 +83,7 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
         CyU3PUsbGetEP0Data(sizeof(glEP0Buffer), glEP0Buffer, &Count);
         isHandled = CyTrue;
         //				DebugPrint(4, "\r\nSet LEDs = 0x%x\r\n",
-        //glEP0Buffer[0]);
+        // glEP0Buffer[0]);
         // 'Set LEDs' moved to char* EventName[30]
         CyU3PEventSet(&DisplayEvent, 1 << 30, CYU3P_EVENT_OR);
       }
@@ -91,7 +91,7 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
         CyU3PUsbAckSetup();
         isHandled = CyTrue;
         //				DebugPrint(4, "\r\nSent Ack to Set
-        //Idle");
+        // Idle");
         // 'Ack to Set Idle' moved to char* EventName[29]
         CyU3PEventSet(&DisplayEvent, 1 << 29, CYU3P_EVENT_OR);
       }
@@ -101,7 +101,7 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
           ((Setup.Value >> 8) == CY_U3P_USB_REPORT_DESCR)) {
         CyU3PUsbSendEP0Data(59, (uint8_t *)ReportDescriptor);
         //				CheckStatus("Send Report Descriptor",
-        //Status);
+        // Status);
         // 'Send Report Descriptor' moved to char* EventName[28]
         CyU3PEventSet(&DisplayEvent, 1 << 28, CYU3P_EVENT_OR);
         isHandled = CyTrue;
@@ -116,15 +116,17 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
 // This structure moved to Support.c
 // const char* EventName[] = {
 //	    "CONNECT", "DISCONNECT", "SUSPEND", "RESUME", "RESET",
-//"SET_CONFIGURATION", "SPEED", 	    "SET_INTERFACE", "SET_EXIT_LATENCY", "SOF_ITP",
-//"USER_EP0_XFER_COMPLETE", "VBUS_VALID", 	    "VBUS_REMOVED", "HOSTMODE_CONNECT",
-//"HOSTMODE_DISCONNECT", "OTG_CHANGE", "OTG_VBUS_CHG", 	    "OTG_SRP", "EP_UNDERRUN",
-//"LINK_RECOVERY", "USB3_LINKFAIL", "SS_COMP_ENTRY", "SS_COMP_EXIT"
+//"SET_CONFIGURATION", "SPEED", 	    "SET_INTERFACE", "SET_EXIT_LATENCY",
+//"SOF_ITP", "USER_EP0_XFER_COMPLETE", "VBUS_VALID", 	    "VBUS_REMOVED",
+//"HOSTMODE_CONNECT", "HOSTMODE_DISCONNECT", "OTG_CHANGE", "OTG_VBUS_CHG",
+//"OTG_SRP", "EP_UNDERRUN", "LINK_RECOVERY", "USB3_LINKFAIL", "SS_COMP_ENTRY",
+//"SS_COMP_EXIT"
 //};
 
 void USBEvent_Callback(CyU3PUsbEventType_t Event, uint16_t EventData) {
   //	Don't use DebugPrint in a Callback, set an event and this will be
-  //displayed later 	DebugPrint(4, "\r\nEvent received = %s", EventName[Event]);
+  // displayed later 	DebugPrint(4, "\r\nEvent received = %s",
+  // EventName[Event]);
   CyU3PEventSet(&DisplayEvent, BitPosition((uint32_t)Event), CYU3P_EVENT_OR);
   switch (Event) {
   case CY_U3P_USB_EVENT_SETCONF:
@@ -171,7 +173,7 @@ CyU3PReturnStatus_t InitializeUSB(void) {
 
   // Connect the USB Pins with super speed operation enabled
   ////// I have a problem with my USB 3.0 Descriptors and this does not
-  ///enumerate at SuperSpeed
+  /// enumerate at SuperSpeed
   ////// Get an Ellisys trace and FIX!
   Status = CyU3PConnectState(CyTrue, CyTrue);
   CheckStatus("Connect USB", Status);
@@ -280,13 +282,13 @@ const uint8_t Ascii2Usage[] = {
     2, 0x31, 2, 0x30, 2, 0x35, 0, 0x28 // 18..1F ^ xyz{|}~
 };
 
-void SendPullEvent(PullEvent* event)
-    // In this example characters typed on the debug console are sent as key strokes
-    // The format of a keystroke is defined in the report descriptor; it is 8 bytes
-    // long = Modifier, Reserved, UsageCode[6] A keyboard will send two reports, one
-    // for key press and one for key release A 'standard' keyboard can encode up to
-    // 6 key usages in one report, this example only does 1 CheckStatus calls
-    // commented out following debug, reinsert them if needed
+void SendPullEvent(PullEvent *event)
+// In this example characters typed on the debug console are sent as key strokes
+// The format of a keystroke is defined in the report descriptor; it is 8 bytes
+// long = Modifier, Reserved, UsageCode[6] A keyboard will send two reports, one
+// for key press and one for key release A 'standard' keyboard can encode up to
+// 6 key usages in one report, this example only does 1 CheckStatus calls
+// commented out following debug, reinsert them if needed
 {
   CyU3PReturnStatus_t Status = CY_U3P_SUCCESS;
   CyU3PDmaBuffer_t ReportBuffer;
@@ -307,10 +309,10 @@ CyU3PQueue PullEventQueue;
 PullEvent PullEventQueueStorage[4];
 
 void GPIO_InterruptCallback(uint8_t gpioId) {
-  static PullEvent event = { 0, 64 };
+  static PullEvent event = {0, 64};
 
   if (gpioId != Button) {
-     return;
+    return;
   }
 
   CyU3PQueueSend(&PullEventQueue, &event, CYU3P_NO_WAIT);
@@ -380,7 +382,7 @@ void ApplicationThread_Entry(uint32_t Value) {
       DebugPrint(4, "  offset=%d\n", event.offset);
       DebugPrint(4, "  length=%d\n", event.length);
       BackgroundPrint(1);
-      //SendKeystroke(msg);
+      // SendKeystroke(msg);
 
       SendPullEvent(&event);
     }

@@ -140,13 +140,12 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__((aligned(32))) = {
     /* Configuration descriptor */
     9,                       /* Descriptor size */
     CY_U3P_USB_CONFIG_DESCR, /* Configuration descriptor type */
-    9 + 9 + 7 + 6,
-    0,    /* Length of this descriptor and all sub descriptors */
-    1,    /* Number of interfaces */
-    1,    /* Configuration number */
-    0,    /* Configuration string index */
-    0x80, /* Config characteristics - Bus powered */
-    12,   /* Max power consumption of device (in 8mA unit) : 96mA */
+    9 + 9 + 7 + 6, 0, /* Length of this descriptor and all sub descriptors */
+    1,                /* Number of interfaces */
+    1,                /* Configuration number */
+    0,                /* Configuration string index */
+    0x80,             /* Config characteristics - Bus powered */
+    12,               /* Max power consumption of device (in 8mA unit) : 96mA */
 
     /* HID Interface descriptor */
     9,                       /* Descriptor size */
@@ -164,7 +163,7 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__((aligned(32))) = {
     CY_U3P_USB_ENDPNT_DESCR, /* Endpoint descriptor type */
     CY_FX_EP_CONSUMER,       /* Endpoint address and description */
     CY_U3P_USB_EP_INTR,      /* Interrupt endpoint type */
-    16, 0,                    /* Max packet size = 16 bytes */
+    16, 0,                   /* Max packet size = 16 bytes */
     8,                       /* Servicing interval for data transfers */
 
     /* Super speed endpoint companion descriptor for consumer EP */
@@ -307,8 +306,8 @@ CyU3PReturnStatus_t SetUSBdescriptors(void) {
   OverallStatus = Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_DEVICE_DESCR, 0,
                                            (uint8_t *)CyFxUSB30DeviceDscr);
   CheckStatus("SET_SS_DEVICE_DESCR", Status);
-  OverallStatus |= Status = CyU3PUsbSetDesc(
-      CY_U3P_USB_SET_HS_DEVICE_DESCR, 0, (uint8_t *)CyFxUSB20DeviceDscr);
+  OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_HS_DEVICE_DESCR, 0,
+                                            (uint8_t *)CyFxUSB20DeviceDscr);
   CheckStatus("SET_HS_DEVICE_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_BOS_DESCR, 0,
                                             (uint8_t *)CyFxUSBBOSDscr);
@@ -316,14 +315,14 @@ CyU3PReturnStatus_t SetUSBdescriptors(void) {
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_DEVQUAL_DESCR, 0,
                                             (uint8_t *)CyFxUSBDeviceQualDscr);
   CheckStatus("SET_DEVQUAL_DESCR", Status);
-  OverallStatus |= Status = CyU3PUsbSetDesc(
-      CY_U3P_USB_SET_SS_CONFIG_DESCR, 0, (uint8_t *)CyFxUSBSSConfigDscr);
+  OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_CONFIG_DESCR, 0,
+                                            (uint8_t *)CyFxUSBSSConfigDscr);
   CheckStatus("SET_SS_CONFIG_DESCR", Status);
-  OverallStatus |= Status = CyU3PUsbSetDesc(
-      CY_U3P_USB_SET_HS_CONFIG_DESCR, 0, (uint8_t *)CyFxUSBHSFSConfigDscr);
+  OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_HS_CONFIG_DESCR, 0,
+                                            (uint8_t *)CyFxUSBHSFSConfigDscr);
   CheckStatus("SET_HS_CONFIG_DESCR", Status);
-  OverallStatus |= Status = CyU3PUsbSetDesc(
-      CY_U3P_USB_SET_FS_CONFIG_DESCR, 0, (uint8_t *)CyFxUSBHSFSConfigDscr);
+  OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_FS_CONFIG_DESCR, 0,
+                                            (uint8_t *)CyFxUSBHSFSConfigDscr);
   CheckStatus("SET_FS_CONFIG_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_STRING_DESCR, 0,
                                             (uint8_t *)CyFxUSBStringLangIDDscr);
