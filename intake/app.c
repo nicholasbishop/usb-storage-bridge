@@ -13,23 +13,23 @@
 
 extern CyU3PReturnStatus_t InitializeDebugConsole(void);
 extern CyU3PReturnStatus_t InitializeUSB(void);
-extern void CheckStatus(char *StringPtr, CyU3PReturnStatus_t Status);
+extern void CheckStatus(char* StringPtr, CyU3PReturnStatus_t Status);
 extern void BackgroundPrint(uint32_t TimeToWait);
 extern uint32_t BitPosition(uint32_t Value);
 
 extern CyU3PDmaChannel glCPUtoUSB_Handle;
-extern CyU3PEvent DisplayEvent; // Used to display events
+extern CyU3PEvent DisplayEvent;  // Used to display events
 extern CyU3PReturnStatus_t SetUSBdescriptors(void);
 
 extern const uint8_t ReportDescriptor[];
 
-CyU3PThread ApplicationThread;  // Handle to my Application Thread
-CyBool_t glIsApplicationActive; // Set true once device is enumerated
+CyU3PThread ApplicationThread;   // Handle to my Application Thread
+CyBool_t glIsApplicationActive;  // Set true once device is enumerated
 
-CyU3PDmaChannel glUSBtoCPU_Handle; // Handle needed for Interrupt Out Endpoint
-CyU3PDmaChannel glCPUtoUSB_Handle; // Handle needed for Interrupt In Endpoint
+CyU3PDmaChannel glUSBtoCPU_Handle;  // Handle needed for Interrupt Out Endpoint
+CyU3PDmaChannel glCPUtoUSB_Handle;  // Handle needed for Interrupt In Endpoint
 
-const char *BusSpeed[] = {"Not Connected", "Full ", "High ", "Super"};
+const char* BusSpeed[] = {"Not Connected", "Full ", "High ", "Super"};
 
 uint8_t glEP0Buffer[32] __attribute__((aligned(32)));
 
@@ -77,7 +77,7 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
   // I only have to handle three class requests for a Keyboard
 #if 1
   if (Setup.Target == CLASS_REQUEST) {
-    if (Setup.Direction == 0) // Host-to-Device
+    if (Setup.Direction == 0)  // Host-to-Device
     {
       if (Setup.Request == HID_SET_REPORT) {
         CyU3PUsbGetEP0Data(sizeof(glEP0Buffer), glEP0Buffer, &Count);
@@ -95,11 +95,11 @@ CyBool_t USBSetup_Callback(uint32_t setupdat0, uint32_t setupdat1) {
         // 'Ack to Set Idle' moved to char* EventName[29]
         CyU3PEventSet(&DisplayEvent, 1 << 29, CYU3P_EVENT_OR);
       }
-    } else // Device-to-Host
+    } else  // Device-to-Host
     {
       if ((Setup.Request == CY_U3P_USB_SC_GET_DESCRIPTOR) &&
           ((Setup.Value >> 8) == CY_U3P_USB_REPORT_DESCR)) {
-        CyU3PUsbSendEP0Data(59, (uint8_t *)ReportDescriptor);
+        CyU3PUsbSendEP0Data(59, (uint8_t*)ReportDescriptor);
         //				CheckStatus("Send Report Descriptor",
         // Status);
         // 'Send Report Descriptor' moved to char* EventName[28]
@@ -129,24 +129,24 @@ void USBEvent_Callback(CyU3PUsbEventType_t Event, uint16_t EventData) {
   // EventName[Event]);
   CyU3PEventSet(&DisplayEvent, BitPosition((uint32_t)Event), CYU3P_EVENT_OR);
   switch (Event) {
-  case CY_U3P_USB_EVENT_SETCONF:
-    /* Stop the application before re-starting. */
-    if (glIsApplicationActive)
-      StopApplication();
-    StartApplication();
-    break;
+    case CY_U3P_USB_EVENT_SETCONF:
+      /* Stop the application before re-starting. */
+      if (glIsApplicationActive)
+        StopApplication();
+      StartApplication();
+      break;
 
-  case CY_U3P_USB_EVENT_RESET:
-  case CY_U3P_USB_EVENT_CONNECT:
-  case CY_U3P_USB_EVENT_DISCONNECT:
-    if (glIsApplicationActive) {
-      CyU3PUsbLPMEnable();
-      StopApplication();
-    }
-    break;
+    case CY_U3P_USB_EVENT_RESET:
+    case CY_U3P_USB_EVENT_CONNECT:
+    case CY_U3P_USB_EVENT_DISCONNECT:
+      if (glIsApplicationActive) {
+        CyU3PUsbLPMEnable();
+        StopApplication();
+      }
+      break;
 
-  default:
-    break;
+    default:
+      break;
   }
 }
 
@@ -181,8 +181,9 @@ CyU3PReturnStatus_t InitializeUSB(void) {
   return Status;
 }
 
-void PacketReceived_Callback(CyU3PDmaChannel *Handle, CyU3PDmaCbType_t Type,
-                             CyU3PDmaBuffer_t *DMAbuffer) {
+void PacketReceived_Callback(CyU3PDmaChannel* Handle,
+                             CyU3PDmaCbType_t Type,
+                             CyU3PDmaBuffer_t* DMAbuffer) {
   // I only get producer events at this callback
   CyU3PReturnStatus_t Status = CY_U3P_SUCCESS;
   uint8_t Packet = *DMAbuffer->buffer;
@@ -202,7 +203,7 @@ void StartApplication(void)
   DebugPrint(4, "\r\nRunning at %sSpeed", BusSpeed[CyU3PUsbGetSpeed()]);
 
   // Configure and enable the Interrupt Endpoint
-  CyU3PMemSet((uint8_t *)&epConfig, 0, sizeof(epConfig));
+  CyU3PMemSet((uint8_t*)&epConfig, 0, sizeof(epConfig));
   epConfig.enable = CyTrue;
   epConfig.epType = CY_U3P_USB_EP_INTR;
   epConfig.burstLen = 1;
@@ -212,9 +213,9 @@ void StartApplication(void)
   CheckStatus("Setup Interrupt In Endpoint", Status);
 
   // Create a manual DMA channel between CPU producer socket and USB
-  CyU3PMemSet((uint8_t *)&dmaConfig, 0, sizeof(dmaConfig));
-  dmaConfig.size = 16; // Minimum size, I only need REPORT_SIZE
-  dmaConfig.count = 2; // KeyDown and KeyUp
+  CyU3PMemSet((uint8_t*)&dmaConfig, 0, sizeof(dmaConfig));
+  dmaConfig.size = 16;  // Minimum size, I only need REPORT_SIZE
+  dmaConfig.count = 2;  // KeyDown and KeyUp
   dmaConfig.prodSckId = CY_FX_CPU_PRODUCER_SOCKET;
   dmaConfig.consSckId = CY_FX_EP_CONSUMER_SOCKET;
   dmaConfig.dmaMode = CY_U3P_DMA_MODE_BYTE;
@@ -232,7 +233,7 @@ void StartApplication(void)
   Status = CyU3PDmaChannelSetXfer(&glCPUtoUSB_Handle, 0);
   CheckStatus("CPUtoUSBdmaChannelSetXfer", Status);
 
-  glIsApplicationActive = CyTrue; // Now ready to run!
+  glIsApplicationActive = CyTrue;  // Now ready to run!
 }
 
 void StopApplication(void)
@@ -245,7 +246,7 @@ void StopApplication(void)
 
   // Close down and disable the endpoint then close the DMA channel
   CyU3PUsbFlushEp(CY_FX_EP_CONSUMER);
-  CyU3PMemSet((uint8_t *)&epConfig, 0, sizeof(epConfig));
+  CyU3PMemSet((uint8_t*)&epConfig, 0, sizeof(epConfig));
   // r	epConfig.enable = CyFalse;
   Status = CyU3PSetEpConfig(CY_FX_EP_CONSUMER, &epConfig);
   CheckStatus("Disable Producer Endpoint", Status);
@@ -257,32 +258,32 @@ const uint8_t Ascii2Usage[] = {
     // Create a lookup table that uses the ASCII character as an index and
     // produces a Modifier/Usage Code pair
     0, 0x2C, 2, 0x1E, 2, 0x34, 2, 0x20,
-    2, 0x21, 2, 0x22, 2, 0x24, 0, 0x34, // 20..27    !"#$%&'
+    2, 0x21, 2, 0x22, 2, 0x24, 0, 0x34,  // 20..27    !"#$%&'
     2, 0x26, 2, 0x27, 2, 0x23, 2, 0x2E,
-    0, 0x36, 0, 0x2D, 0, 0x37, 0, 0x38, // 28..2F   ()*+,-./
+    0, 0x36, 0, 0x2D, 0, 0x37, 0, 0x38,  // 28..2F   ()*+,-./
     0, 0x27, 0, 0x1E, 0, 0x1F, 0, 0x20,
-    0, 0x21, 0, 0x22, 0, 0x23, 0, 0x24, // 28..2F   01234567
+    0, 0x21, 0, 0x22, 0, 0x23, 0, 0x24,  // 28..2F   01234567
     0, 0x25, 0, 0x26, 2, 0x33, 0, 0x33,
-    2, 0x36, 0, 0x2E, 2, 0x37, 2, 0x38, // 28..2F   89:;<=>?
+    2, 0x36, 0, 0x2E, 2, 0x37, 2, 0x38,  // 28..2F   89:;<=>?
     2, 0x1F, 2, 0x04, 2, 0x05, 2, 0x06,
-    2, 0x07, 2, 0x08, 2, 0x09, 0, 0x0A, // 00..07 ^ @ABCDEFG
+    2, 0x07, 2, 0x08, 2, 0x09, 0, 0x0A,  // 00..07 ^ @ABCDEFG
     2, 0x0B, 2, 0x0C, 2, 0x0D, 2, 0x0E,
-    2, 0x0F, 2, 0x10, 2, 0x11, 2, 0x12, // 08..1F ^ HIJKLMNO
+    2, 0x0F, 2, 0x10, 2, 0x11, 2, 0x12,  // 08..1F ^ HIJKLMNO
     2, 0x13, 2, 0x14, 2, 0x15, 2, 0x16,
-    2, 0x17, 2, 0x18, 2, 0x19, 2, 0x1A, // 10..17 ^ PQRSTUVW
+    2, 0x17, 2, 0x18, 2, 0x19, 2, 0x1A,  // 10..17 ^ PQRSTUVW
     2, 0x1B, 2, 0x1C, 2, 0x1D, 0, 0x2F,
-    0, 0x31, 0, 0x30, 2, 0x23, 2, 0x2D, // 18..1F ^ XYZ[\]^_
+    0, 0x31, 0, 0x30, 2, 0x23, 2, 0x2D,  // 18..1F ^ XYZ[\]^_
     0, 0x2C, 0, 0x04, 0, 0x05, 0, 0x06,
-    0, 0x07, 0, 0x08, 0, 0x09, 0, 0x0A, // 00..07 ^ @abcdefg
+    0, 0x07, 0, 0x08, 0, 0x09, 0, 0x0A,  // 00..07 ^ @abcdefg
     0, 0x0B, 0, 0x0C, 0, 0x0D, 0, 0x0E,
-    0, 0x0F, 0, 0x10, 0, 0x11, 0, 0x12, // 08..1F ^ hijklmno
+    0, 0x0F, 0, 0x10, 0, 0x11, 0, 0x12,  // 08..1F ^ hijklmno
     0, 0x13, 0, 0x14, 0, 0x15, 0, 0x16,
-    0, 0x17, 0, 0x18, 0, 0x19, 0, 0x1A, // 10..17 ^ pqrstuvw
+    0, 0x17, 0, 0x18, 0, 0x19, 0, 0x1A,  // 10..17 ^ pqrstuvw
     0, 0x1B, 0, 0x1C, 0, 0x1D, 2, 0x2F,
-    2, 0x31, 2, 0x30, 2, 0x35, 0, 0x28 // 18..1F ^ xyz{|}~
+    2, 0x31, 2, 0x30, 2, 0x35, 0, 0x28  // 18..1F ^ xyz{|}~
 };
 
-void SendPullEvent(PullEvent *event)
+void SendPullEvent(PullEvent* event)
 // In this example characters typed on the debug console are sent as key strokes
 // The format of a keystroke is defined in the report descriptor; it is 8 bytes
 // long = Modifier, Reserved, UsageCode[6] A keyboard will send two reports, one
@@ -333,7 +334,7 @@ void InitGpio() {
   CyU3PGpioInit(&GpioClock, GPIO_InterruptCallback);
 
   // Configure Button GPIOs
-  CyU3PMemSet((uint8_t *)&GpioConfig, 0, sizeof(GpioConfig));
+  CyU3PMemSet((uint8_t*)&GpioConfig, 0, sizeof(GpioConfig));
   GpioConfig.inputEn = CyTrue;
   GpioConfig.intrMode = CY_U3P_GPIO_INTR_NEG_EDGE;
   CyU3PGpioSetSimpleConfig(Button, &GpioConfig);
@@ -390,5 +391,5 @@ void ApplicationThread_Entry(uint32_t Value) {
   DebugPrint(4, "\r\nApplication failed to initialize. Error code: %d.\r\n",
              Status);
   while (1)
-    ; // Hang here
+    ;  // Hang here
 }

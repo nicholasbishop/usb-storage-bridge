@@ -46,7 +46,7 @@
    heap area which is used by the application code as well as the drivers to
    allocate thread stacks and other internal data structures.
  */
-#define CY_U3P_MEM_HEAP_BASE ((uint8_t *)0x40029000)
+#define CY_U3P_MEM_HEAP_BASE ((uint8_t*)0x40029000)
 #define CY_U3P_MEM_HEAP_SIZE (0x7000)
 
 /*
@@ -73,7 +73,7 @@
    heap area which is used by the application code as well as the drivers to
    allocate thread stacks and other internal data structures.
  */
-#define CY_U3P_MEM_HEAP_BASE ((uint8_t *)0x40038000)
+#define CY_U3P_MEM_HEAP_BASE ((uint8_t*)0x40038000)
 #define CY_U3P_MEM_HEAP_SIZE (0x8000)
 
 /*
@@ -90,9 +90,9 @@
    use of a reserved area in the SYSTEM RAM and ensures that all allocated DMA
    buffers are aligned to cache lines.
  */
-#define CY_U3P_BUFFER_HEAP_BASE                                                \
+#define CY_U3P_BUFFER_HEAP_BASE \
   (((uint32_t)(CY_U3P_MEM_HEAP_BASE) + (CY_U3P_MEM_HEAP_SIZE)))
-#define CY_U3P_BUFFER_HEAP_SIZE                                                \
+#define CY_U3P_BUFFER_HEAP_SIZE \
   ((CY_U3P_SYS_MEM_TOP) - (CY_U3P_BUFFER_HEAP_BASE))
 
 #define CY_U3P_BUFFER_ALLOC_TIMEOUT (10)
@@ -138,7 +138,7 @@ void CyU3PAbortHandler(void) {
 /* This function is expected to be invoked by the RTOS kernel after
  * initialization. No explicit call to this function must be made.
  */
-void tx_application_define(void *unusedMem) {
+void tx_application_define(void* unusedMem) {
   (void)unusedMem;
   CyU3PApplicationDefine();
 }
@@ -158,17 +158,17 @@ void CyU3PMemInit(void) {
   }
 }
 
-void *CyU3PMemAlloc(uint32_t size) {
-  void *ret_p;
+void* CyU3PMemAlloc(uint32_t size) {
+  void* ret_p;
   uint32_t status;
 
   /* Cannot wait in interrupt context */
   if (CyU3PThreadIdentify()) {
-    status = CyU3PByteAlloc(&glMemBytePool, (void **)&ret_p, size,
+    status = CyU3PByteAlloc(&glMemBytePool, (void**)&ret_p, size,
                             CY_U3P_MEM_ALLOC_TIMEOUT);
   } else {
     status =
-        CyU3PByteAlloc(&glMemBytePool, (void **)&ret_p, size, CYU3P_NO_WAIT);
+        CyU3PByteAlloc(&glMemBytePool, (void**)&ret_p, size, CYU3P_NO_WAIT);
   }
 
   if (status == CY_U3P_SUCCESS) {
@@ -178,9 +178,11 @@ void *CyU3PMemAlloc(uint32_t size) {
   return (NULL);
 }
 
-void CyU3PMemFree(void *mem_p) { CyU3PByteFree(mem_p); }
+void CyU3PMemFree(void* mem_p) {
+  CyU3PByteFree(mem_p);
+}
 
-void CyU3PMemSet(uint8_t *ptr, uint8_t data, uint32_t count) {
+void CyU3PMemSet(uint8_t* ptr, uint8_t data, uint32_t count) {
   /* Loop unrolling for faster operation */
   while (count >> 3) {
     ptr[0] = data;
@@ -202,7 +204,7 @@ void CyU3PMemSet(uint8_t *ptr, uint8_t data, uint32_t count) {
   }
 }
 
-void CyU3PMemCopy(uint8_t *dest, uint8_t *src, uint32_t count) {
+void CyU3PMemCopy(uint8_t* dest, uint8_t* src, uint32_t count) {
   /* Loop unrolling for faster operation */
   while (count >> 3) {
     dest[0] = src[0];
@@ -226,7 +228,7 @@ void CyU3PMemCopy(uint8_t *dest, uint8_t *src, uint32_t count) {
   }
 }
 
-int32_t CyU3PMemCmp(const void *s1, const void *s2, uint32_t n) {
+int32_t CyU3PMemCmp(const void* s1, const void* s2, uint32_t n) {
   const uint8_t *ptr1 = s1, *ptr2 = s2;
 
   while (n--) {
@@ -268,7 +270,7 @@ void CyU3PDmaBufferInit(void) {
      bit array is being used, round up to the necessary number of
      32 bit words. */
   size = ((CY_U3P_BUFFER_HEAP_SIZE / 32) + 31) / 32;
-  glBufferManager.usedStatus = (uint32_t *)CyU3PMemAlloc(size * 4);
+  glBufferManager.usedStatus = (uint32_t*)CyU3PMemAlloc(size * 4);
   if (glBufferManager.usedStatus == 0) {
     CyU3PMutexDestroy(&glBufferManager.lock);
     return;
@@ -276,7 +278,7 @@ void CyU3PDmaBufferInit(void) {
 
   /* Initially mark all memory as available. If there are any status bits
      beyond the valid memory range, mark these as unavailable. */
-  CyU3PMemSet((uint8_t *)glBufferManager.usedStatus, 0, (size * 4));
+  CyU3PMemSet((uint8_t*)glBufferManager.usedStatus, 0, (size * 4));
   if ((CY_U3P_BUFFER_HEAP_SIZE / 32) & 31) {
     tmp = 32 - ((CY_U3P_BUFFER_HEAP_SIZE / 32) & 31);
     glBufferManager.usedStatus[size - 1] = ~((1 << tmp) - 1);
@@ -320,7 +322,8 @@ void CyU3PDmaBufferDeInit(void) {
 
 /* Helper function for the DMA buffer manager. Used to set/clear
    a set of status bits from the alloc/free functions. */
-static void CyU3PDmaBufMgrSetStatus(uint32_t startPos, uint32_t numBits,
+static void CyU3PDmaBufMgrSetStatus(uint32_t startPos,
+                                    uint32_t numBits,
                                     CyBool_t value) {
   uint32_t wordnum = (startPos >> 5);
   uint32_t startbit, endbit, mask;
@@ -355,11 +358,11 @@ static void CyU3PDmaBufMgrSetStatus(uint32_t startPos, uint32_t numBits,
 }
 
 /* This function shall be invoked from the DMA module for buffer allocation */
-void *CyU3PDmaBufferAlloc(uint16_t size) {
+void* CyU3PDmaBufferAlloc(uint16_t size) {
   uint32_t tmp;
   uint32_t wordnum, bitnum;
   uint32_t count, start = 0;
-  void *ptr = 0;
+  void* ptr = 0;
 
   /* Get the lock for the buffer manager. */
   if (CyU3PThreadIdentify()) {
@@ -424,7 +427,7 @@ void *CyU3PDmaBufferAlloc(uint16_t size) {
   if (count == (size + 1)) {
     /* Mark the memory region identified as occupied and return the pointer. */
     CyU3PDmaBufMgrSetStatus(start, size - 1, CyTrue);
-    ptr = (void *)(glBufferManager.startAddr + (start << 5));
+    ptr = (void*)(glBufferManager.startAddr + (start << 5));
   }
 
   CyU3PMutexPut(&glBufferManager.lock);
@@ -433,7 +436,7 @@ void *CyU3PDmaBufferAlloc(uint16_t size) {
 
 /* This function shall be invoked from the DMA module for buffer de-allocation
  */
-int CyU3PDmaBufferFree(void *buffer) {
+int CyU3PDmaBufferFree(void* buffer) {
   uint32_t status, start, count;
   uint32_t wordnum, bitnum;
   int retVal = -1;

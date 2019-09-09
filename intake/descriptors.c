@@ -14,7 +14,7 @@
 
 #include "Application.h"
 
-extern void CheckStatus(char *StringPtr, CyU3PReturnStatus_t Status);
+extern void CheckStatus(char* StringPtr, CyU3PReturnStatus_t Status);
 
 /* Standard device descriptor for USB 3.0 */
 const uint8_t CyFxUSB30DeviceDscr[] __attribute__((aligned(32))) = {
@@ -100,39 +100,39 @@ const uint8_t CyFxUSBDeviceQualDscr[] __attribute__((aligned(32))) = {
 
 // Report Descriptor, needed by all interfaces
 const uint8_t ReportDescriptor[] __attribute__((aligned(32))) = {
-    5, 1,    // Usage Page(Generic Desktop)
-    9, 6,    // Usage (Keyboard)
-    0xA1, 1, // Collection(Application)
+    5, 1,     // Usage Page(Generic Desktop)
+    9, 6,     // Usage (Keyboard)
+    0xA1, 1,  // Collection(Application)
     // First declare the 8 byte input report for Keycodes
-    5, 7,       //	Usage Page(Keycodes)
-    0x19, 224,  //	Usage Minimum
-    0x29, 231,  //	Usage Maximum
-    0x15, 0,    //	Logical Minimum
-    0x25, 1,    //	Logical Maximum
-    0x75, 1,    //	Report Size = 1 bit
-    0x95, 8,    //	Report Count
-    0x81, 2,    //	Input(DataAbsolute) = Modifier byte
-    0x81, 1,    //	Input(Constant) = Reserved byte
-    0x75, 8,    //	Report Size = 1 byte
-    0x95, 6,    //	Report Count
-                // I only support printable ASCII keys (and CR)
-    0x19, 0,    //	Usage Minimum
-    0x29, 0x38, //	Usage Maximum
-    0x15, 0,    //	Logical Minimum
-    0x25, 0x38, //	Logical Maximum
-    0x81, 0,    //	Input(DataArray) = 6 Keycodes
+    5, 7,        //	Usage Page(Keycodes)
+    0x19, 224,   //	Usage Minimum
+    0x29, 231,   //	Usage Maximum
+    0x15, 0,     //	Logical Minimum
+    0x25, 1,     //	Logical Maximum
+    0x75, 1,     //	Report Size = 1 bit
+    0x95, 8,     //	Report Count
+    0x81, 2,     //	Input(DataAbsolute) = Modifier byte
+    0x81, 1,     //	Input(Constant) = Reserved byte
+    0x75, 8,     //	Report Size = 1 byte
+    0x95, 6,     //	Report Count
+                 // I only support printable ASCII keys (and CR)
+    0x19, 0,     //	Usage Minimum
+    0x29, 0x38,  //	Usage Maximum
+    0x15, 0,     //	Logical Minimum
+    0x25, 0x38,  //	Logical Maximum
+    0x81, 0,     //	Input(DataArray) = 6 Keycodes
     // Now declare the 5 bit input report for LEDs
-    5, 8,    //	Usage Page(LEDs)
-    0x19, 1, //	Usage Minimum
-    0x29, 5, //	Usage Maximum
-    0x15, 0, //	Logical Minimum
-    0x25, 1, //	Logical Maximum
-    0x75, 1, //	Report Size = 1 bit
-    0x95, 5, //	Report Count
-    0x91, 2, //	Output(DataAbsolute) = LEDs
-    0x95, 3, //	Report Count
-    0x91, 1, //	Output(Constant) = LED padding to next byte boundary
-    0xC0     // End Collection
+    5, 8,     //	Usage Page(LEDs)
+    0x19, 1,  //	Usage Minimum
+    0x29, 5,  //	Usage Maximum
+    0x15, 0,  //	Logical Minimum
+    0x25, 1,  //	Logical Maximum
+    0x75, 1,  //	Report Size = 1 bit
+    0x95, 5,  //	Report Count
+    0x91, 2,  //	Output(DataAbsolute) = LEDs
+    0x95, 3,  //	Report Count
+    0x91, 1,  //	Output(Constant) = LED padding to next byte boundary
+    0xC0      // End Collection
 };
 
 /* Standard super speed configuration descriptor */
@@ -304,34 +304,34 @@ const uint8_t CyFxUSBProductDscr[] __attribute__((aligned(32))) = {
 CyU3PReturnStatus_t SetUSBdescriptors(void) {
   CyU3PReturnStatus_t OverallStatus, Status;
   OverallStatus = Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_DEVICE_DESCR, 0,
-                                           (uint8_t *)CyFxUSB30DeviceDscr);
+                                           (uint8_t*)CyFxUSB30DeviceDscr);
   CheckStatus("SET_SS_DEVICE_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_HS_DEVICE_DESCR, 0,
-                                            (uint8_t *)CyFxUSB20DeviceDscr);
+                                            (uint8_t*)CyFxUSB20DeviceDscr);
   CheckStatus("SET_HS_DEVICE_DESCR", Status);
-  OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_BOS_DESCR, 0,
-                                            (uint8_t *)CyFxUSBBOSDscr);
+  OverallStatus |= Status =
+      CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_BOS_DESCR, 0, (uint8_t*)CyFxUSBBOSDscr);
   CheckStatus("SET_SS_BOS_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_DEVQUAL_DESCR, 0,
-                                            (uint8_t *)CyFxUSBDeviceQualDscr);
+                                            (uint8_t*)CyFxUSBDeviceQualDscr);
   CheckStatus("SET_DEVQUAL_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_SS_CONFIG_DESCR, 0,
-                                            (uint8_t *)CyFxUSBSSConfigDscr);
+                                            (uint8_t*)CyFxUSBSSConfigDscr);
   CheckStatus("SET_SS_CONFIG_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_HS_CONFIG_DESCR, 0,
-                                            (uint8_t *)CyFxUSBHSFSConfigDscr);
+                                            (uint8_t*)CyFxUSBHSFSConfigDscr);
   CheckStatus("SET_HS_CONFIG_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_FS_CONFIG_DESCR, 0,
-                                            (uint8_t *)CyFxUSBHSFSConfigDscr);
+                                            (uint8_t*)CyFxUSBHSFSConfigDscr);
   CheckStatus("SET_FS_CONFIG_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_STRING_DESCR, 0,
-                                            (uint8_t *)CyFxUSBStringLangIDDscr);
+                                            (uint8_t*)CyFxUSBStringLangIDDscr);
   CheckStatus("SET_STRING0_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_STRING_DESCR, 1,
-                                            (uint8_t *)CyFxUSBManufactureDscr);
+                                            (uint8_t*)CyFxUSBManufactureDscr);
   CheckStatus("SET_STRING1_DESCR", Status);
   OverallStatus |= Status = CyU3PUsbSetDesc(CY_U3P_USB_SET_STRING_DESCR, 2,
-                                            (uint8_t *)CyFxUSBProductDscr);
+                                            (uint8_t*)CyFxUSBProductDscr);
   CheckStatus("SET_STRING2_DESCR", Status);
 
   return OverallStatus;

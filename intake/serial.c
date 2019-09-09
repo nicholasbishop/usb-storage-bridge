@@ -8,14 +8,14 @@
 #include "Application.h"
 
 // Declare external functions
-extern void CheckStatus(char *StringPtr, CyU3PReturnStatus_t Status);
+extern void CheckStatus(char* StringPtr, CyU3PReturnStatus_t Status);
 extern void SendKeystroke(char InputChar);
 
 CyBool_t glDebugTxEnabled =
-    CyFalse; // Set true once I can output messages to the Console
-CyU3PDmaChannel glUARTtoCPU_Handle; // Handle needed by Uart Callback routine
-char glConsoleInBuffer[32];         // Buffer for user Console Input
-uint32_t glConsoleInIndex;          // Index into ConsoleIn buffer
+    CyFalse;  // Set true once I can output messages to the Console
+CyU3PDmaChannel glUARTtoCPU_Handle;  // Handle needed by Uart Callback routine
+char glConsoleInBuffer[32];          // Buffer for user Console Input
+uint32_t glConsoleInIndex;           // Index into ConsoleIn buffer
 
 void UartCallback(CyU3PUartEvt_t Event, CyU3PUartError_t Error)
 // Handle characters typed in by the developer
@@ -28,7 +28,7 @@ void UartCallback(CyU3PUartEvt_t Event, CyU3PUartError_t Error)
     CyU3PDmaChannelGetBuffer(&glUARTtoCPU_Handle, &ConsoleInDmaBuffer,
                              CYU3P_NO_WAIT);
     InputChar = (char)*ConsoleInDmaBuffer.buffer;
-    DebugPrint(4, "%c", InputChar); // Echo the character
+    DebugPrint(4, "%c", InputChar);  // Echo the character
     // In this example the characters typed on the debug console are sent as
     // keystrokes on the keyboard
     // SendKeystroke(InputChar);
@@ -55,10 +55,10 @@ CyU3PReturnStatus_t InitializeDebugConsole(void) {
   CyU3PDmaChannelConfig_t dmaConfig;
   CyU3PReturnStatus_t Status = CY_U3P_SUCCESS;
 
-  Status = CyU3PUartInit(); // Start the UART driver
+  Status = CyU3PUartInit();  // Start the UART driver
   CheckStatus("CyU3PUartInit", Status);
 
-  CyU3PMemSet((uint8_t *)&uartConfig, 0, sizeof(uartConfig));
+  CyU3PMemSet((uint8_t*)&uartConfig, 0, sizeof(uartConfig));
   uartConfig.baudRate = CY_U3P_UART_BAUDRATE_115200;
   uartConfig.stopBit = CY_U3P_UART_ONE_STOP_BIT;
   // r	uartConfig.parity   = CY_U3P_UART_NO_PARITY;
@@ -67,27 +67,27 @@ CyU3PReturnStatus_t InitializeDebugConsole(void) {
   // r	uartConfig.flowCtrl = CyFalse;
   uartConfig.isDma = CyTrue;
   Status = CyU3PUartSetConfig(&uartConfig,
-                              UartCallback); // Configure the UART hardware
+                              UartCallback);  // Configure the UART hardware
   CheckStatus("CyU3PUartSetConfig", Status);
 
   Status =
-      CyU3PUartTxSetBlockXfer(0xFFFFFFFF); // Send as much data as I need to
+      CyU3PUartTxSetBlockXfer(0xFFFFFFFF);  // Send as much data as I need to
   CheckStatus("CyU3PUartTxSetBlockXfer", Status);
 
   Status = CyU3PDebugInit(CY_U3P_LPP_SOCKET_UART_CONS,
-                          6); // Attach the Debug driver above the UART driver
+                          6);  // Attach the Debug driver above the UART driver
   if (Status == CY_U3P_SUCCESS)
     glDebugTxEnabled = CyTrue;
   CheckStatus("ConsoleOutEnabled", Status);
   CyU3PDebugPreamble(
-      CyFalse); // Skip preamble, debug info is targeted for a person
+      CyFalse);  // Skip preamble, debug info is targeted for a person
 
   // Now setup a DMA channel to receive characters from the Uart Rx
   Status = CyU3PUartRxSetBlockXfer(1);
   CheckStatus("CyU3PUartRxSetBlockXfer", Status);
-  CyU3PMemSet((uint8_t *)&dmaConfig, 0, sizeof(dmaConfig));
-  dmaConfig.size = 16; // Minimum size allowed, I only need 1 byte
-  dmaConfig.count = 1; // I can't type faster than the Uart Callback routine!
+  CyU3PMemSet((uint8_t*)&dmaConfig, 0, sizeof(dmaConfig));
+  dmaConfig.size = 16;  // Minimum size allowed, I only need 1 byte
+  dmaConfig.count = 1;  // I can't type faster than the Uart Callback routine!
   dmaConfig.prodSckId = CY_U3P_LPP_SOCKET_UART_PROD;
   dmaConfig.consSckId = CY_U3P_CPU_SOCKET_CONS;
   dmaConfig.dmaMode = CY_U3P_DMA_MODE_BYTE;
