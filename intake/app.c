@@ -212,6 +212,15 @@ void StartApplication(void)
   Status = CyU3PSetEpConfig(CY_FX_EP_CONSUMER, &epConfig);
   CheckStatus("Setup Interrupt In Endpoint", Status);
 
+  // Based on the Bus Speed configure the endpoint packet size
+  CyU3PMemSet((uint8_t *)&epConfig, 0, sizeof(epConfig));
+  epConfig.enable = CyTrue;
+  epConfig.epType = CY_U3P_USB_EP_BULK;
+  epConfig.burstLen = 16;
+  epConfig.pcktSize = 1024;
+  Status = CyU3PSetEpConfig(CY_FX_EP_PRODUCER, &epConfig);
+  CheckStatus("Setup USB_CONSUMER_ENDPOINT", Status);
+
   // Create a manual DMA channel between CPU producer socket and USB
   CyU3PMemSet((uint8_t*)&dmaConfig, 0, sizeof(dmaConfig));
   dmaConfig.size = 16;  // Minimum size, I only need REPORT_SIZE

@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
       break;
     }
 
-    rc = libusb_bulk_transfer(device, /*endpoint=*/0x00,
+    rc = libusb_bulk_transfer(device, /*endpoint=*/0x02,
                               file_data + event.offset, event.length,
                               &transferred, /*timeout=*/0);
     printf("output: rc=%s, transferred=%d\n", libusb_error_name(rc),

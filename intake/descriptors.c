@@ -140,7 +140,7 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__((aligned(32))) = {
     /* Configuration descriptor */
     9,                       /* Descriptor size */
     CY_U3P_USB_CONFIG_DESCR, /* Configuration descriptor type */
-    9 + 9 + 7 + 6, 0, /* Length of this descriptor and all sub descriptors */
+    9 + 9 + 7 + 7 + 6, 0, /* Length of this descriptor and all sub descriptors */
     1,                /* Number of interfaces */
     1,                /* Configuration number */
     0,                /* Configuration string index */
@@ -152,7 +152,7 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__((aligned(32))) = {
     CY_U3P_USB_INTRFC_DESCR, /* Interface Descriptor type */
     0,                       /* Interface number */
     0,                       /* Alternate setting number */
-    1,                       /* Number of end points */
+    2,                       /* Number of end points */
     0xff,                    /* HID class */
     1,                       /* Boot Interface sub class */
     1,                       /* Keyboard protocol code */
@@ -173,6 +173,20 @@ const uint8_t CyFxUSBSSConfigDscr[] __attribute__((aligned(32))) = {
     0, /* Max streams for interrupt endpoint = 0 (No streams) */
     8, 0, /* Service interval for the endpoint */
 
+    /* Endpoint descriptor for consumer EP */
+    7,                       /* Descriptor size */
+    CY_U3P_USB_ENDPNT_DESCR, /* Endpoint descriptor type */
+    CY_FX_EP_PRODUCER,       /* Endpoint address and description */
+    CY_U3P_USB_EP_BULK,      /* Bulk endpoint type */
+    0x00, 0x04,              /* Max packet size = 1024 bytes */
+    0x00,                    /* Servicing interval for data transfers : 0 for Bulk */
+
+    /* Super speed endpoint companion descriptor for producer EP */
+    6,                        /* Descriptor size */
+    CY_U3P_SS_EP_COMPN_DESCR, /* SS endpoint companion descriptor type */
+    15, /* Max no. of packets in a burst(0-15) - 0: burst 1 packet at a time */
+    0, /* Max streams for bulk endpoint = 0 (No streams) */
+    0, 0, /* Service interval for the endpoint */
 };
 
 /* Standard high speed configuration descriptor */
