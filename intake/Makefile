@@ -27,12 +27,12 @@ include $(FX3_TOOLCHAIN)/common/fx3_build_config.mak
 
 MODULE = usb-storage-bridge-intake
 
-SOURCE += cyfxtx.c
-SOURCE += serial.c
 SOURCE += app.c
-SOURCE += main.c
-SOURCE += support.c
+SOURCE += cyfxtx.c
 SOURCE += descriptors.c
+SOURCE += main.c
+SOURCE += serial.c
+SOURCE += support.c
 SOURCE_ASM += cyfx_gcc_startup.S
 
 C_OBJECT=$(SOURCE:%.c=./%.o)
