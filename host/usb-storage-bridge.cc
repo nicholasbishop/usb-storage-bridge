@@ -1,6 +1,10 @@
 #include <cstdio>
 #include <stdexcept>
 
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+
 #include <libusb-1.0/libusb.h>
 
 class LibUsb {
@@ -27,7 +31,7 @@ int main(int argc, char** argv) {
   LibUsb lib;
 
   int rc = libusb_set_option(nullptr, LIBUSB_OPTION_LOG_LEVEL,
-                             LIBUSB_LOG_LEVEL_DEBUG);
+                             LIBUSB_LOG_LEVEL_WARNING);
   if (rc) {
     fprintf(stderr, "libusb_set_option failed: %d\n", rc);
   }
@@ -53,19 +57,45 @@ int main(int argc, char** argv) {
             libusb_error_name(rc));
   }
 
+  int fd = open(path.c_str(), O_RDONLY);
+  if (fd < 0) {
+    fprintf(stderr, "open failed\n");
+    return 1;
+  }
+
+  struct stat sb;
+  fstat(fd, &sb);
+
+  unsigned char* file_data = reinterpret_cast<unsigned char*>(
+      mmap(nullptr, sb.st_size, PROT_WRITE, MAP_SHARED, fd, /*offset=*/0));
+
   struct PullEvent {
     uint64_t offset;
     uint64_t length;
   };
 
-  PullEvent event = {0, 0};
+  for (;;) {
+    PullEvent event = {0, 0};
 
-  int transferred = 0;
-  rc = libusb_interrupt_transfer(device, /*endpoint=*/0x82,
-                                 reinterpret_cast<unsigned char*>(&event),
-                                 sizeof(event), &transferred, /*timeout=*/0);
-  printf("rc=%s, transferred=%d, offset=%ld, length=%ld\n",
-         libusb_error_name(rc), transferred, event.offset, event.length);
+    int transferred = 0;
+    rc = libusb_interrupt_transfer(device, /*endpoint=*/0x82,
+                                   reinterpret_cast<unsigned char*>(&event),
+                                   sizeof(event), &transferred, /*timeout=*/0);
+    printf("input: rc=%s, transferred=%d, offset=%ld, length=%ld\n",
+           libusb_error_name(rc), transferred, event.offset, event.length);
+    if (rc) {
+      break;
+    }
+
+    rc = libusb_bulk_transfer(device, /*endpoint=*/0x00,
+                              file_data + event.offset, event.length,
+                              &transferred, /*timeout=*/0);
+    printf("output: rc=%s, transferred=%d\n", libusb_error_name(rc),
+           transferred);
+    if (rc) {
+      break;
+    }
+  }
 
   libusb_close(device);
 
