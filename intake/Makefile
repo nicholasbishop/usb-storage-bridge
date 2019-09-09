@@ -33,7 +33,6 @@ SOURCE += app.c
 SOURCE += main.c
 SOURCE += support.c
 SOURCE += descriptors.c
-SOURCE += USB_Handler.c
 SOURCE_ASM += cyfx_gcc_startup.S
 
 C_OBJECT=$(SOURCE:%.c=./%.o)
