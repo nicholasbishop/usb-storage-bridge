@@ -1,19 +1,3 @@
-## Copyright Cypress Semiconductor Corporation, 2010-2011,
-## All Rights Reserved
-## UNPUBLISHED, LICENSED SOFTWARE.
-##
-## CONFIDENTIAL AND PROPRIETARY INFORMATION
-## WHICH IS THE PROPERTY OF CYPRESS.
-##
-## Use of this file is governed
-## by the license agreement included in the file
-##
-##      <install>/license/license.txt
-##
-## where <install> is the Cypress software
-## installation root directory path.
-##
-
 export ARMGCC_INSTALL_PATH=$(FX3_TOOLCHAIN)/arm-2013.11
 export ARMGCC_VERSION="4.8.1"
 FX3FWROOT=$(FX3_TOOLCHAIN)
@@ -59,5 +43,3 @@ compile: $(C_OBJECT) $(A_OBJECT) $(EXES)
 
 mkimg: $(MODULE).$(EXEEXT)
 	$(ELF2IMG) -i $(MODULE).$(EXEEXT) -o $(MODULE).img
-
-#[]#
