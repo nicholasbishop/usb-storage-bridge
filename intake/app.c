@@ -1,15 +1,6 @@
-// Keyboard.c - demonstrate USB by enumerating as a keyboard
-//
-// john@usb-by-example.com
-//
-// This is an enhancement of the Keyboard in the book (which is now called
-// Keyboard0) The program got into several hangs due to my use of DebugPrint in
-// a Callback routines Yes, the book tells you not to do this.  So this example
-// follow my advice! I now set flags in a DisplayEvent EventGroup and use
-// BackgoundPrint to print these in main context
-//
-
 #include "Application.h"
+
+#include "gpif.h"
 
 extern CyU3PReturnStatus_t InitializeDebugConsole(void);
 extern CyU3PReturnStatus_t InitializeUSB(void);
@@ -355,6 +346,37 @@ void InitGpio() {
   CyU3PGpioSetSimpleConfig(Button, &GpioConfig);
 }
 
+void CyFxApplnGPIFEventCB(
+    CyU3PGpifEventType event, /* Event type that is being notified. */
+    uint8_t currentState      /* Current state of the State Machine. */
+) {
+  switch (event) {
+    case CYU3P_GPIF_EVT_SM_INTERRUPT: {
+      // TODO
+      // CyU3PDmaChannelSetWrapUp(&glChHandleBulkLpPtoU);
+    } break;
+
+    default:
+      break;
+  }
+}
+
+void InitGpif() {
+  CyU3PReturnStatus_t Status = CY_U3P_SUCCESS;
+
+  Status = CyU3PGpifLoad(&CyFxGpifConfig);
+  CheckStatus("CyU3PGpifLoad", Status);
+
+  CyU3PGpifSocketConfigure(0, CY_U3P_PIB_SOCKET_0, 4, CyFalse, 7);
+  CyU3PGpifSocketConfigure(1, CY_U3P_PIB_SOCKET_1, 0, CyFalse, 1);
+
+  CyU3PGpifRegisterCallback(CyFxApplnGPIFEventCB);
+
+  /* Start the state machine. */
+  Status = CyU3PGpifSMStart(RESET, ALPHA_RESET);
+  CheckStatus("CyU3PGpifSMStart", Status);
+}
+
 void ApplicationThread_Entry(uint32_t Value) {
   CyU3PReturnStatus_t Status = CY_U3P_SUCCESS;
 
@@ -362,6 +384,7 @@ void ApplicationThread_Entry(uint32_t Value) {
   CheckStatus("Debug Console Initialized", Status);
 
   InitGpio();
+  InitGpif();
 
   Status = CyU3PQueueCreate(&PullEventQueue, 4, &PullEventQueueStorage,
                             sizeof(PullEventQueueStorage));
